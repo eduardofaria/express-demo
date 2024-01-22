@@ -1,3 +1,9 @@
+//import "dotenv/config";
+const dotenv = require("dotenv"); // or without a const call it use process.env
+dotenv.config();
+const env = process.env;
+
+const config = require("config");
 const helmet = require("helmet");
 const morgan = require("morgan"); // Not to be uses in production, impact response perfomance
 const express = require("express");
@@ -9,12 +15,33 @@ const Joi = require("joi"); // "J" because returns a Class
 //require("joi")(Joi); // Other way to import
 const app = express();
 
+console.log(`Enviroment: ${process.env.NODE_ENV}`); // returns undefined if nothing is set
+console.log(`App: ${app.get("env")}`); // app.get brings a object with info about the application. If process.env.NODE_ENV not set, returns "development" by default.
+
+/*
+Setting enviromment
+On Mac: export NODE_ENV=production
+On Windows: set NODE_ENV=production
+*/
+
 app.use(express.json()); // A middleware. Need to be enable for express receive JSON in the req.body
 app.use(express.urlencoded({ extended: true })); //transform forms input in this: key=value&key=value
 // extended: true enable to pass arrays and complex objects in url encoded format
 app.use(express.static("public")); // for serving static files. Use a folder to use, as argument.
 app.use(helmet()); // is a function, so, need "()"
-app.use(morgan("tiny")); // a logger. Is a functions "()", "tiny" is the simplest argument. Tiny display a simple log in console
+
+//CONFIGURATION
+console.log("Application Name: " + config.get("name"));
+console.log(`Mail Server: ${config.get("mail.host")}`);
+console.log(`Mail Password: ${config.get("mail.password")}`); // add this to env in terminal: set app_password=1234
+// If using npm config pkg, the json file with variables in config folder must me named: custom-environment-variables.json
+// password in .env INTENCIONALLY NOT IN .gitignore to show the magic. Add this in .gitignore in real world BEFORE the first commit of sensitive data.
+console.log(`Mail Password: ${env.secure_app_password}`);
+
+if (app.get("env") === "development") {
+  app.use(morgan("tiny")); // a logger. Is a functions "()", "tiny" is the simplest argument. Tiny display a simple log in console
+  console.log("[INFO] Morgan enabled...");
+}
 app.use(logger);
 app.use(authenticate);
 
