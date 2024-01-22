@@ -1,10 +1,22 @@
+const helmet = require("helmet");
+const morgan = require("morgan"); // Not to be uses in production, impact response perfomance
 const express = require("express");
 const { string } = require("joi");
+const logger = require("./logger");
+const authenticate = require("./authenticate");
 const Joi = require("joi"); // "J" because returns a Class
+
 //require("joi")(Joi); // Other way to import
 const app = express();
 
 app.use(express.json()); // A middleware. Need to be enable for express receive JSON in the req.body
+app.use(express.urlencoded({ extended: true })); //transform forms input in this: key=value&key=value
+// extended: true enable to pass arrays and complex objects in url encoded format
+app.use(express.static("public")); // for serving static files. Use a folder to use, as argument.
+app.use(helmet()); // is a function, so, need "()"
+app.use(morgan("tiny")); // a logger. Is a functions "()", "tiny" is the simplest argument. Tiny display a simple log in console
+app.use(logger);
+app.use(authenticate);
 
 //MOCKUP DATA
 const courses = [
