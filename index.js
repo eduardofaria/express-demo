@@ -1,4 +1,6 @@
 //import "dotenv/config";
+const startuDebugger = require("debug")("app:startup");
+const dbDebugger = require("debug")("app:db");
 const dotenv = require("dotenv"); // or without a const call it use process.env
 dotenv.config();
 const env = process.env;
@@ -40,8 +42,19 @@ console.log(`Mail Password: ${env.secure_app_password}`);
 
 if (app.get("env") === "development") {
   app.use(morgan("tiny")); // a logger. Is a functions "()", "tiny" is the simplest argument. Tiny display a simple log in console
-  console.log("[INFO] Morgan enabled...");
+  //console.log("[INFO] Morgan enabled...");
+
+  startuDebugger("[INFO] Morgan enabled...");
+  // In console: set DEBUG=app:startup
+  // To reset: set DEBUG=
+  // For multiple debugs: DEBUG=app:startup,app:db
+  // For all debug of a namespaces to debug: DEBUG=app:*
+  // Enable in command line, start server with: DEBUG=app.db nodemon index.js
 }
+
+// Database work...
+dbDebugger("Connected to the database...");
+
 app.use(logger);
 app.use(authenticate);
 
