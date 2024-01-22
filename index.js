@@ -17,6 +17,10 @@ const Joi = require("joi"); // "J" because returns a Class
 //require("joi")(Joi); // Other way to import
 const app = express();
 
+//Popular Template Engines for Express: Pug (used here), Mustache, EJS
+app.set("view engine", "pug"); //With this syntax, Express auto load this module, no need to "require".
+app.set("views", "./views"); // default value, change it is optional.
+
 console.log(`Enviroment: ${process.env.NODE_ENV}`); // returns undefined if nothing is set
 console.log(`App: ${app.get("env")}`); // app.get brings a object with info about the application. If process.env.NODE_ENV not set, returns "development" by default.
 
@@ -66,7 +70,8 @@ const courses = [
 ];
 
 app.get("/", (req, res) => {
-  res.send("<h1>Hello World</h1>");
+  //res.send("<h1>Hello World</h1>");
+  res.render("index", { title: "Express-Demo", message: "Hello World!" }); //index = the name of file in ./views to use
 });
 
 //using MOCKUP DATA
