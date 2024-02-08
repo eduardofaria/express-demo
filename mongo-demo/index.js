@@ -55,8 +55,55 @@ async function getCourses() {
   }
 }
 
-getCourses();
+// Approach 1: Query first -> findById() > Modify Property > save()
+/* async function updateCourse(id) {
+  const course = await Course.findById(id);
+  if (!course) return;
+  //course.isPublished = true;
+  //course.author = "Another Author";
+  course.set({
+    isPublished: true,
+    author: "Another Author",
+  });
+  const result = await course.save();
+  console.log(result);
+}*/
+
+// Approach 2: Update first -> Update directly > Optionally get the updated docuument
+async function updateCourse2(id) {
+  //if (course.isPublished) return; //Verifying condition BEFORE update it
+  //or multi update courses by {îsPublished: false}
+  const result = await Course.updateOne(
+    // .findByIdAndUpdate() além de atualizar, retornaria o objeto ANTES da modificação. Adicionando o argumento {new: true} retornara o Obj DEPOIS de alterado.
+    { _id: id },
+    {
+      //or multi update courses by {îsPublished: false}
+      $set: {
+        author: "Mosh",
+        isPublished: false,
+      },
+    }
+  );
+
+  console.log(result);
+}
+
+async function removeCourse(id) {
+  const result = await Course.deleteOne({ _id: id }); //or multi update courses by {îsPublished: false}, .deleteOne() will delete ONLY THE FIRST ONE FOUNDED.
+  // .deleteMany() to delete various objexts simultaneously
+  // .findByIdAndRemove() delete and return the object that was deleted, if not found, will return "null".
+  console.log(result);
+}
+
+removeCourse("65c4ed7aabe38e29daea128c");
+//updateCourse2("65b58f66c1d0fd324da523af");
+//getCourses();
 //createCourse();
+
+/*
+ método update foi descontinuado no Mongoose a partir da versão 4.0.0.
+ Em vez disso, você deve usar o método updateOne, updateMany, findOneAndUpdate ou replaceOne para atualizar documentos no banco de dados.
+*/
 
 /*
 # MongoDB Comparison Operators
