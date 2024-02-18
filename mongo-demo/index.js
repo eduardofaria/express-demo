@@ -5,8 +5,9 @@ mongoose
   .then(() => console.log("Connected to MongoDB..."))
   .catch((error) => console.log("DB Error: " + error));
 
+// In SQL you can maek a field as "required" in DB. Not in MongoDB, needs to put this requeriment in Schema.
 const courseSchema = new mongoose.Schema({
-  name: String,
+  name: { type: String, require: true }, //Create a requeriment to validade
   author: String,
   tags: [String],
   date: {
@@ -26,8 +27,14 @@ async function createCourse() {
     isPublished: true,
   });
 
-  const result = await course.save(); // is a promise
-  console.log(result);
+  try {
+    await course.validate(); // Make a validation check, without sending anything to database. Return void, so, can't store anything to use. Must use callback to get sometihing, ex: "course.validate((err) => { if (err){...}})"
+    //Handle Validation error
+    const result = await course.save(); // is a promise
+    console.log(result);
+  } catch (error) {
+    console.log(error.message);
+  }
 }
 
 async function getCourses() {
@@ -95,10 +102,10 @@ async function removeCourse(id) {
   console.log(result);
 }
 
-removeCourse("65c4ed7aabe38e29daea128c");
+//removeCourse("65c4ed7aabe38e29daea128c");
 //updateCourse2("65b58f66c1d0fd324da523af");
 //getCourses();
-//createCourse();
+createCourse();
 
 /*
  método update foi descontinuado no Mongoose a partir da versão 4.0.0.
